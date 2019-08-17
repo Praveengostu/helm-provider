@@ -1,24 +1,19 @@
 resource "ibm_container_cluster" "kubecluster" {
-  count           = "1"
-  name            = "${var.cluster_name}"
-  datacenter      = "${var.datacenter}"
-  org_guid        = "${data.ibm_org.org.id}"
-  space_guid      = "${data.ibm_space.space.id}"
-  account_guid    = "${data.ibm_account.account.id}"
-  machine_type    = "${var.machine_type}"
-  public_vlan_id  = "${var.public_vlan_id}"
-  private_vlan_id = "${var.private_vlan_id}"
-  no_subnet       = true
-  workers         = "${var.workers[var.num_workers]}"
+  name              = "${var.cluster_name}${random_id.name.hex}"
+  datacenter        = "${var.datacenter}"
+  default_pool_size = "${var.default_pool_size}"
+  machine_type      = "${var.machine_type}"
+  hardware          = "${var.hardware}"
+  kube_version      = "${var.kube_version}"
+  public_vlan_id    = "${var.public_vlan_id}"
+  private_vlan_id   = "${var.private_vlan_id}"
+  lifecycle {
+    ignore_changes = ["kube_version"]
+  }
 }
 
-data "ibm_container_cluster_config" "cluster_config" {
-  count           = 1
-  cluster_name_id = "${ibm_container_cluster.kubecluster.name}"
-  org_guid        = "${data.ibm_org.org.id}"
-  space_guid      = "${data.ibm_space.space.id}"
-  account_guid    = "${data.ibm_account.account.id}"
-  config_dir      = "/tmp"
+resource "random_id" "name" {
+  byte_length = 4
 }
 
 provider "helm" {

@@ -1,3 +1,3 @@
-# tf-helm2
+# Helm Provider Example
 
-This terraform config is in an EXPERIMENTAL state!
+Provision a cluster and then use the helm provider to install redis on the cluster
